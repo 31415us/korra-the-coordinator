@@ -1,0 +1,2 @@
+git+git://github.com/cvra/molly-the-motion-planner.git
+pykka
