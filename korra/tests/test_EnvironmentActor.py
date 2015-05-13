@@ -19,14 +19,8 @@ class EnvironmentActorTest(unittest.TestCase):
 
         self.assertTrue(self.env.proxy().get_friend().get() is None)
 
-        (pos, heading, speed, _) = self.env.proxy().get_robot_state(0.0).get()
-
-        self.assertTrue(pos == Vec2D(1, 1))
-        self.assertTrue(heading == Vec2D(1, 0))
-        self.assertTrue(speed == 0.0)
-
-        (traj, _) = self.env.proxy().get_traj().get()
-        self.assertTrue(not traj)
+        target = self.env.proxy().get_target().get()
+        self.assertTrue(target is None)
 
     def test_update_friend(self):
         pos = Vec2D(2, 2)
@@ -53,3 +47,13 @@ class EnvironmentActorTest(unittest.TestCase):
         self.assertTrue(len(enemies) == 1)
         self.assertTrue(enemies[0] == pos)
 
+    def test_update_target(self):
+        target = Vec2D()
+        msg = {
+                'cmd' : 'update_target',
+                'target' : target
+                }
+        self.env.tell(msg)
+
+        res = self.env.proxy().get_target().get()
+        self.assertTrue(res == target)
