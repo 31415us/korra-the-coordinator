@@ -1,6 +1,7 @@
 
 import pykka
 import time
+import math
 
 class EnvironmentActor(pykka.ThreadingActor):
 
@@ -30,7 +31,6 @@ class EnvironmentActor(pykka.ThreadingActor):
 
     def on_receive(self, msg):
         command = msg.get('cmd')
-
         if command == 'update_friend':
             self.friend = msg.get('friend')
         elif command == 'update_enemy':
@@ -58,7 +58,7 @@ class EnvironmentActor(pykka.ThreadingActor):
         return self.friend
 
     def get_robot_state(self, time_offset):
-        if not self._update_pos().get():
+        if not self._update_pos():
             # invalid state
             return None
 
@@ -69,7 +69,7 @@ class EnvironmentActor(pykka.ThreadingActor):
                     time.time() + time_offset)
 
         now = time.time()
-        future = (now - self.traj_base_time) / self.time_res
+        future = int(math.ceil((now - self.traj_base_time) / self.time_res))
 
         if future < len(self.trajectory):
             (pos, speed, acc, t) = self.trajectory[future]
@@ -78,9 +78,18 @@ class EnvironmentActor(pykka.ThreadingActor):
 
         return (pos, speed.normalized(), speed.length(), now + t)
 
+    def get_traj(self):
+        if not self._update_pos():
+            return None
+
+        return (self.trajectory, self.traj_base_time)
+
     def _update_pos(self):
+        if not self.trajectory:
+            return True
+
         now = time.time()
-        to_drop = (now - self.traj_base_time) / self.time_res
+        to_drop = int(math.ceil((now - self.traj_base_time) / self.time_res))
         new_traj = self.trajectory[to_drop:]
 
         if new_traj:
@@ -108,6 +117,4 @@ class EnvironmentActor(pykka.ThreadingActor):
         self.traj_base_time = now
 
         return True
-
-
 
