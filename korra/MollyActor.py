@@ -5,7 +5,7 @@ import time
 from molly.Vec2D import Vec2D
 from molly.Circle import Circle
 
-from korry.Utils import MollyWrapper
+from korra.Utils import MollyWrapper
 
 class MollyActor(pykka.ThreadingActor):
 
@@ -36,7 +36,7 @@ class MollyActor(pykka.ThreadingActor):
         if not friend_pos is None:
             obstacles.append(Cricle(friend_pos, self.obstacle_radius))
 
-        traj = self.molly_wrapper(robot_state, target, obstacles)
+        traj = self.molly_wrapper.get_trajectory(robot_state, target, obstacles)
 
         msg = {
                 'cmd' : 'base_traj',
