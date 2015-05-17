@@ -24,7 +24,7 @@ class TimerTest(unittest.TestCase):
 
     def setUp(self):
         self.rec = MockTimeReceiver.start()
-        self.timer = TimerActor.start(self.rec, 0.1)
+        self.timer = TimerActor.start(self.rec, 0.1, 'timer_event')
 
     def tearDown(self):
         pykka.ActorRegistry.stop_all()

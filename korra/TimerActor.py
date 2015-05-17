@@ -7,10 +7,11 @@ class TimerActor(pykka.ThreadingActor):
      inspired by: \
      https://github.com/jodal/pykka/issues/24"
 
-    def __init__(self, target, sleep_time):
+    def __init__(self, target, sleep_time, event):
         super(TimerActor, self).__init__()
         self.target = target
         self.sleep_time = sleep_time
+        self.event = event
         self.running = False
 
     def on_receive(self, msg):
@@ -27,5 +28,5 @@ class TimerActor(pykka.ThreadingActor):
         if not self.running:
             return
         time.sleep(self.sleep_time)
-        self.target.tell({'cmd' : 'timer_event'})
+        self.target.tell({'cmd' : self.event})
         self.actor_ref.tell({'cmd' : 'trigger'})
