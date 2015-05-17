@@ -24,12 +24,13 @@ class MollyActor(pykka.ThreadingActor):
     def send_new_traj(self):
         now = time.time()
         state_proxy = self.state_publisher.proxy()
+        env_proxy = self.environment.proxy()
 
         robot_state = state_proxy.get_state(now + self.estimated_delay).get()
-        target = state_proxy.get_target().get()
+        target = env_proxy.get_target().get()
 
-        enemy_pos = state_proxy.get_enemies().get()
-        friend_pos = state_proxy.get_friend().get()
+        enemy_pos = env_proxy.get_enemies().get()
+        friend_pos = env_proxy.get_friend().get()
 
         obstacles = [Circle(e, self.obstacle_radius) for e in enemy_pos]
         if not friend_pos is None:
