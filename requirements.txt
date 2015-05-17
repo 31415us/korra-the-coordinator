@@ -1,2 +1,3 @@
 git+git://github.com/cvra/molly-the-motion-planner.git
+git+git://github.com/cvra/inverse-kinematics.git
 pykka
