@@ -7,6 +7,7 @@ from molly.Pathplanner import get_path, ramp_down
 
 from pickit.Joint import Joint
 from pickit.Datatypes import JointMinMaxConstraint, TimeToDestination 
+
 class MollyWrapper(object):
 
     def __init__(self):
@@ -18,21 +19,20 @@ class MollyWrapper(object):
                                                            vel_min=-max_omega,
                                                            vel_max=max_omega,
                                                            acc_min=-max_alpha,
-                                                           acc_max=max_alhpa))
+                                                           acc_max=max_alpha))
 
 
-    def get_trajectory(robot_state, target, obstacles):
+    def get_trajectory(self, robot_state, target, obstacles):
         (x, y, vx, vy, theta, omega) = robot_state
 
         (pos, heading, speed)= robot_state_to_molly(robot_state)
 
-        if target is None:
+        if target is None or target == pos:
             molly_traj = ramp_down(pos, heading, speed, self.settings)
 
             return molly_traj_to_robot_state_traj(robot_state,
                                                   molly_traj,
                                                   self.settings.time_resolution)
-
         traj = []
         if speed < 1e-3:
             # when standing still it's probably more efficient to first
@@ -58,8 +58,6 @@ class MollyWrapper(object):
 
         return traj
 
-
-
 def robot_state_to_molly(robot_state):
     (x, y, vx, vy, theta, omega) = robot_state
     pos = Vec2D(x, y)
@@ -77,7 +75,7 @@ def molly_to_robot_state(molly_point, prev_robot_state, delta_t):
         omega = 0.0
     else:
         theta = Vec2D(1, 0).oriented_angle(vel)
-        omega = (vel.pox_x * acc.pos_y - vel.pos_y * acc.pos_x)
+        omega = (vel.pos_x * acc.pos_y - vel.pos_y * acc.pos_x)
         omega /= vel.dot(vel)
 
     return (pos.pos_x,
@@ -114,3 +112,4 @@ def rotate_robot(robot_state,
         res.append((x, y, vx, vy, pos, vel))
 
     return res
+
