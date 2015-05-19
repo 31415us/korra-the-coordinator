@@ -12,7 +12,7 @@ class DummyEnv(pykka.ThreadingActor):
     def on_receive(self, msg):
         raise Error()
 
-    def get_target(self):
+    def get_target(self, name):
         return Vec2D(1, 0)
 
     def get_enemies(self):
@@ -35,7 +35,7 @@ class DummyState(pykka.ThreadingActor):
         else:
             raise Error()
 
-    def get_state(self, time):
+    def get_state(self, name, time):
         return (0, 0, 0, 0, 0)
 
     def get_time(self):

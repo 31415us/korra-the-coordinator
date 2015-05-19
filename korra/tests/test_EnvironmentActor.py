@@ -19,9 +19,6 @@ class EnvironmentActorTest(unittest.TestCase):
 
         self.assertTrue(self.env.proxy().get_friend().get() is None)
 
-        target = self.env.proxy().get_target().get()
-        self.assertTrue(target is None)
-
     def test_update_friend(self):
         pos = Vec2D(2, 2)
 
@@ -51,9 +48,10 @@ class EnvironmentActorTest(unittest.TestCase):
         target = Vec2D()
         msg = {
                 'cmd' : 'update_target',
+                'planner' : 'wheelbase',
                 'target' : target
                 }
         self.env.tell(msg)
 
-        res = self.env.proxy().get_target().get()
+        res = self.env.proxy().get_target('wheelbase').get()
         self.assertTrue(res == target)
