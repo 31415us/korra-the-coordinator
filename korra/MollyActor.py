@@ -26,8 +26,8 @@ class MollyActor(pykka.ThreadingActor):
         state_proxy = self.state_publisher.proxy()
         env_proxy = self.environment.proxy()
 
-        robot_state = state_proxy.get_state(now + self.estimated_delay).get()
-        target = env_proxy.get_target().get()
+        robot_state = state_proxy.get_state('wheelbase', now + self.estimated_delay).get()
+        target = env_proxy.get_target('molly').get()
 
         enemy_pos = env_proxy.get_enemies().get()
         friend_pos = env_proxy.get_friend().get()
@@ -41,7 +41,8 @@ class MollyActor(pykka.ThreadingActor):
         msg = {
                 'cmd' : 'base_traj',
                 'time' : now + self.estimated_delay,
-                'traj' : traj
+                'traj' : traj,
+                'dt' : self.molly_wrapper.settings.time_resolution
                }
 
         self.state_publisher.tell(msg)
