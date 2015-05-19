@@ -36,7 +36,7 @@ class DummyState(pykka.ThreadingActor):
             raise Error()
 
     def get_state(self, time):
-        return (0, 0, 0, 0, 0, 0)
+        return (0, 0, 0, 0, 0)
 
     def get_time(self):
         return self.time

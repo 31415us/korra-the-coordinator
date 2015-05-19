@@ -23,7 +23,7 @@ class MollyWrapper(object):
 
 
     def get_trajectory(self, robot_state, target, obstacles):
-        (x, y, vx, vy, theta, omega) = robot_state
+        (x, y, v, theta, omega) = robot_state
 
         (pos, heading, speed)= robot_state_to_molly(robot_state)
 
@@ -59,18 +59,20 @@ class MollyWrapper(object):
         return traj
 
 def robot_state_to_molly(robot_state):
-    (x, y, vx, vy, theta, omega) = robot_state
+    (x, y, v, theta, omega) = robot_state
     pos = Vec2D(x, y)
     heading = Vec2D(1, 0).rotate(theta)
-    speed = Vec2D(vx, vy).length()
+    speed = v
 
     return (pos, heading, speed)
 
 def molly_to_robot_state(molly_point, prev_robot_state, delta_t):
     (pos, vel, acc, _) = molly_point
-    (_, _, _, _, prev_theta, prev_omega) = prev_robot_state
+    (_, _, _, prev_theta, prev_omega) = prev_robot_state
 
-    if vel.length() < Vec2D.EPSILON:
+    speed = vel.length()
+
+    if speed < Vec2D.EPSILON:
         theta = prev_theta + prev_omega * delta_t
         omega = 0.0
     else:
@@ -80,8 +82,7 @@ def molly_to_robot_state(molly_point, prev_robot_state, delta_t):
 
     return (pos.pos_x,
             pos.pos_y,
-            vel.pos_x,
-            vel.pos_y,
+            speed,
             theta,
             omega)
 
@@ -101,7 +102,7 @@ def rotate_robot(robot_state,
                  joint,
                  delta_t):
 
-    (x, y, vx, vy, theta, omega) = robot_state
+    (x, y, v, theta, omega) = robot_state
 
     time_to_dest = joint.time_to_destination(theta, omega, target_heading, 0)
 
@@ -109,7 +110,7 @@ def rotate_robot(robot_state,
 
     res = []
     for (t, pos, vel, acc) in path:
-        res.append((x, y, vx, vy, pos, vel))
+        res.append((x, y, v, pos, vel))
 
     return res
 
