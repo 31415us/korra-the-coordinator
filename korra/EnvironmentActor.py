@@ -8,7 +8,7 @@ class EnvironmentActor(pykka.ThreadingActor):
         super(EnvironmentActor, self).__init__()
 
         # robot current target
-        self.target_pos = None
+        self.planner_targets = {}
 
         # enemy pos
         self.enemy1 = None
@@ -28,7 +28,9 @@ class EnvironmentActor(pykka.ThreadingActor):
             elif e_id == 2:
                 self.enemy2 = pos
         elif command == 'update_target':
-            self.target_pos = msg.get('target')
+            planner_name = msg.get('planner')
+            target = msg.get('target')
+            self.planner_targets[planner_name] = target
         
     def get_enemies(self):
         res = []
@@ -41,6 +43,6 @@ class EnvironmentActor(pykka.ThreadingActor):
     def get_friend(self):
         return self.friend
 
-    def get_target(self):
-        return self.target_pos
+    def get_target(self, planner_name):
+        return self.planner_targets.get(planner_name)
 
