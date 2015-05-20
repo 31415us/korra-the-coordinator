@@ -1,11 +1,12 @@
 
 import pykka
-from time import time, sleep
+import time
 
 from korra.StatePublisherActor import StatePublisherActor
 from korra.MollyActor import MollyActor
 from korra.EnvironmentActor import EnvironmentActor
 from korra.KorraActor import KorraActor
+from korra.TimerActor import TimerActor
 
 from molly.Vec2D import Vec2D
 
@@ -17,6 +18,15 @@ class Tester(object):
         self.molly = MollyActor.start(self.state_pub, self.env, 0.1, 0.3)
 
         self.korra = KorraActor.start(self.state_pub, self.env, self.molly, (1, 1, 0, 0, 0))
+
+        self.molly_timer = TimerActor.start(self.korra, 0.2, 'molly_timer')
+        self.pub_timer = TimerActor.start(self.korra, 0.1, 'publish_timer')
+
+    def init_explicit(self, init_state):
+        self.molly.tell({'cmd' : 'init', 'robot_state' : init_state})
+        time.sleep(0.2)
+        self.molly_timer.tell({'cmd' : 'start'})
+        self.pub_timer.tell({'cmd' : 'start'})
 
 
     def set_target(self, x, y):
@@ -39,3 +49,9 @@ class Tester(object):
 
     def shutdown(self):
         pykka.ActorRegistry.stop_all()
+
+if __name__ == "__main__":
+    t = Tester()
+    t.is_alive()
+    t.init_explicit((1, 1, 0, 0, 0))
+    t.set_target(2.0, 1.0)
