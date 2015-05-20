@@ -1,6 +1,7 @@
 
 import pykka
 import time
+import logging
 
 from molly.Vec2D import Vec2D
 from molly.Circle import Circle
@@ -19,17 +20,22 @@ class MollyActor(pykka.ThreadingActor):
 
     def on_receive(self, msg):
         cmd = msg.get('cmd')
-        if cmd == 'send_traj':
-            self.send_new_traj()
-        elif cmd == 'init':
-            init_state = msg.get('robot_state')
-            nmsg = {
-                    'cmd' : 'molly',
-                    'dt' : self.molly_wrapper.settings.time_resolution,
-                    'time' : time.time(),
-                    'traj' : [init_state]
-                    }
-            self.state_publisher.tell(nmsg)
+        try:
+            if cmd == 'send_traj':
+                self.send_new_traj()
+            elif cmd == 'init':
+                init_state = msg.get('robot_state')
+                nmsg = {
+                        'cmd' : 'molly',
+                        'dt' : self.molly_wrapper.settings.time_resolution,
+                        'time' : time.time(),
+                        'traj' : [init_state]
+                        }
+                self.state_publisher.tell(nmsg)
+        except Exception as e:
+            print(cmd)
+            logging.exception("molly crashed")
+
 
     def send_new_traj(self):
         now = time.time()
