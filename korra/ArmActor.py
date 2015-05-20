@@ -17,12 +17,29 @@ class ArmActor(pykka.ThreadingActor):
 
         # Get initial state of arm to initialise Arm
         now = time.time()
-        (q0, q0_vel) = self.get_arm_state(now)
+        q0 = JointSpacePoint(0.0, 0.0, 0.0, 0.0)
         self.arm = ArmWrapper(q0, flip)
 
     def on_receive(self, msg):
-        if msg.get('cmd') == 'send_' + self.flip + '_arm_traj':
-            self.send_new_traj()
+        cmd = msg.get('cmd')
+        try:
+            if cmd == 'send_' + self.flip + '_arm_traj':
+                self.send_new_traj()
+            elif cmd == 'init':
+                init_state = msg.get(self.flip + '_arm_state')
+                msg = {
+                       'cmd' : self.flip + '_arm_traj',
+                       'time' : now,
+                       'dt': self.arm.arm.dt,
+                       'z' : [init_state(0)],
+                       'shoulder' : [init_state(1)],
+                       'elbow' : [init_state(2)],
+                       'wrist' : [init_state(3)]
+                       }
+                self.state_publisher.tell(nmsg)
+        except Exception as e:
+            print(cmd)
+            logging.exception(self.flip + " arm crashed")
 
     def send_new_traj(self):
         now = time.time()
