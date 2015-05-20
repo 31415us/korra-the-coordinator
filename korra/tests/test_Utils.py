@@ -18,8 +18,8 @@ class HelperFunctionsTest(unittest.TestCase):
 
         (pos, heading, speed) = utils.robot_state_to_molly(robot_state)
 
-        self.assertTrue(pos == ref_pos)
-        self.assertTrue(heading == ref_heading)
+        self.assertTrue(pos.is_equal(ref_pos))
+        self.assertTrue(heading.is_equal(ref_heading))
         self.assertAlmostEqual(speed, ref_speed)
 
     def test_molly_to_robot_v0(self):

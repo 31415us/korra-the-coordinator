@@ -27,7 +27,7 @@ class MollyWrapper(object):
 
         (pos, heading, speed)= robot_state_to_molly(robot_state)
 
-        if target is None or target == pos:
+        if target is None or target.is_equal(pos):
             molly_traj = ramp_down(pos, heading, speed, self.settings)
 
             return molly_traj_to_robot_state_traj(robot_state,
