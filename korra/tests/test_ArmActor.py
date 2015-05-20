@@ -5,14 +5,16 @@ import unittest
 from korra.ArmActor import ArmActor
 from pickit.Datatypes import RobotSpacePoint
 
+
 class DummyEnv(pykka.ThreadingActor):
 
     def on_receive(self, msg):
-        raise Error()
+        raise RuntimeError("Unexpected message")
 
     def get_target(self, name):
         return (RobotSpacePoint(0.2, 0.1, 0, 0),
                 RobotSpacePoint(0, 0, 0, 0))
+
 
 class DummyState(pykka.ThreadingActor):
 
@@ -34,7 +36,7 @@ class DummyState(pykka.ThreadingActor):
             self.traj_elbow = msg.get('elbow')
             self.traj_wrist = msg.get('wrist')
         else:
-            raise Error()
+            raise RuntimeError("Unexpected message")
 
     def get_state(self, name, time):
         return (0, 0)
@@ -57,6 +59,7 @@ class DummyState(pykka.ThreadingActor):
     def get_traj_wrist(self):
         return self.traj_wrist
 
+
 class ArmActorTest(unittest.TestCase):
 
     def setUp(self):
@@ -68,21 +71,21 @@ class ArmActorTest(unittest.TestCase):
         pykka.ActorRegistry.stop_all()
 
     def test_sendtraj(self):
-        msg = {'cmd' : 'send_right_arm_traj'}
+        msg = {'cmd': 'send_right_arm_traj'}
 
-        self.assertTrue(self.dummy_state.proxy().get_time().get() is None)
-        self.assertTrue(self.dummy_state.proxy().get_time_resolution().get() is None)
-        self.assertTrue(self.dummy_state.proxy().get_traj_z().get() is None)
-        self.assertTrue(self.dummy_state.proxy().get_traj_shoulder().get() is None)
-        self.assertTrue(self.dummy_state.proxy().get_traj_elbow().get() is None)
-        self.assertTrue(self.dummy_state.proxy().get_traj_wrist().get() is None)
+        self.assertIsNone(self.dummy_state.proxy().get_time().get())
+        self.assertIsNone(self.dummy_state.proxy().get_time_resolution().get())
+        self.assertIsNone(self.dummy_state.proxy().get_traj_z().get())
+        self.assertIsNone(self.dummy_state.proxy().get_traj_shoulder().get())
+        self.assertIsNone(self.dummy_state.proxy().get_traj_elbow().get())
+        self.assertIsNone(self.dummy_state.proxy().get_traj_wrist().get())
 
         self.arm.tell(msg)
-        time.sleep(0.2) # wait for trajectory computation to finish
+        time.sleep(0.2)  # wait for trajectory computation to finish
 
-        self.assertTrue(self.dummy_state.proxy().get_time().get() is not None)
-        self.assertTrue(self.dummy_state.proxy().get_time_resolution().get() is not None)
-        self.assertTrue(self.dummy_state.proxy().get_traj_z().get() is not None)
-        self.assertTrue(self.dummy_state.proxy().get_traj_shoulder().get() is not None)
-        self.assertTrue(self.dummy_state.proxy().get_traj_elbow().get() is not None)
-        self.assertTrue(self.dummy_state.proxy().get_traj_wrist().get() is not None)
+        self.assertIsNotNone(self.dummy_state.proxy().get_time().get())
+        self.assertIsNotNone(self.dummy_state.proxy().get_time_resolution().get())
+        self.assertIsNotNone(self.dummy_state.proxy().get_traj_z().get())
+        self.assertIsNotNone(self.dummy_state.proxy().get_traj_shoulder().get())
+        self.assertIsNotNone(self.dummy_state.proxy().get_traj_elbow().get())
+        self.assertIsNotNone(self.dummy_state.proxy().get_traj_wrist().get())
