@@ -31,7 +31,7 @@ class EnvironmentActor(pykka.ThreadingActor):
             planner_name = msg.get('planner')
             target = msg.get('target')
             self.planner_targets[planner_name] = target
-        
+
     def get_enemies(self):
         res = []
         if self.enemy1 is not None:
