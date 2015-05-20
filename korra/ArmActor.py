@@ -1,6 +1,7 @@
 
 import pykka
 import time
+import logging
 
 from pickit.Datatypes import *
 from pickit import ArmManager
@@ -26,16 +27,20 @@ class ArmActor(pykka.ThreadingActor):
             if cmd == 'send_' + self.flip + '_arm_traj':
                 self.send_new_traj()
             elif cmd == 'init':
-                init_state = msg.get(self.flip + '_arm_state')
-                msg = {
-                       'cmd' : self.flip + '_arm_traj',
-                       'time' : now,
-                       'dt': self.arm.arm.dt,
-                       'z' : [init_state(0)],
-                       'shoulder' : [init_state(1)],
-                       'elbow' : [init_state(2)],
-                       'wrist' : [init_state(3)]
-                       }
+                now = time.time()
+                init_z = msg.get(self.flip + '_z_state')
+                init_shoulder = msg.get(self.flip + '_shoulder_state')
+                init_elbow = msg.get(self.flip + '_elbow_state')
+                init_wrist = msg.get(self.flip + '_wrist_state')
+                nmsg = {
+                        'cmd' : self.flip + '_arm_traj',
+                        'time' : now,
+                        'dt': self.arm.arm.dt,
+                        'z' : [(init_z[0], init_z[1], 0, 0)],
+                        'shoulder' : [(init_shoulder[0], init_shoulder[1], 0, 0)],
+                        'elbow' : [(init_elbow[0], init_elbow[1], 0, 0)],
+                        'wrist' : [(init_wrist[0], init_wrist[1], 0, 0)]
+                        }
                 self.state_publisher.tell(nmsg)
         except Exception as e:
             print(cmd)
@@ -46,7 +51,9 @@ class ArmActor(pykka.ThreadingActor):
         state = self.get_arm_state(now + self.estimated_delay) # state is pos & vel JointSpacePoint
 
         env_proxy = self.environment.proxy()
-        target = env_proxy.get_target(self.flip+'-arm').get() # target is pos & vel RobotSpacePoint
+        target = env_proxy.get_target(self.flip+'_arm').get() # target is pos & vel RobotSpacePoint
+
+        print(target)
 
         z, shoulder, elbow, wrist = self.arm.goto(state, target)
 

@@ -47,13 +47,15 @@ class ArmWrapper(object):
         return arm_to_joint_traj(th1, th2, z, th3, self.arm.dt)
 
 def joint_states_to_arm(z, shoulder, elbow, wrist):
-    (z_pos, z_vel) = z
-    (th1_pos, th1_vel) = shoulder
-    (th2_pos, th2_vel) = elbow
-    (th3_pos, th3_vel) = wrist
+    (z_pos, z_vel, z_acc, z_trq) = z
+    (th1_pos, th1_vel, th1_acc, th1_trq) = shoulder
+    (th2_pos, th2_vel, th2_acc, th2_trq) = elbow
+    (th3_pos, th3_vel, th3_acc, th3_trq) = wrist
 
     pos = JointSpacePoint(th1_pos, th2_pos, z_pos, th3_pos)
     vel = JointSpacePoint(th1_vel, th2_vel, z_vel, th3_vel)
+
+    print(pos, vel)
 
     return (pos, vel)
 
