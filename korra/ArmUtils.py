@@ -10,9 +10,11 @@ class ArmWrapper(object):
         if flip=='right':
             flip_x  = FLIP_RIGHT_HAND
             origin = Vector3D(0.15, 0.0, 0.0)
+            ws_side = Workspace(0.1,2.0, -1.0,1.0, 0.0,0.2, 1)
         elif flip=='left':
             flip_x  = FLIP_LEFT_HAND
             origin = Vector3D(-0.15, 0.0, 0.0)
+            ws_side = Workspace(-2.0,-0.1, -1.0,1.0, 0.0,0.2, 1)
 
         arm = DebraArm(l1 = 0.2,
                        l2 = 0.1,
@@ -25,7 +27,6 @@ class ArmWrapper(object):
                        flip_x = flip_x)
 
         ws_front = Workspace(-1.0,1.0, 0.1,2.0, 0.0,0.2, 1)
-        ws_side = Workspace(0.1,2.0, -1.0,1.0, 0.0,0.2, 1)
         ws_back = Workspace(-1.0,1.0, -2.0,-0.1, 0.0,0.2, -1)
         delta_t = 0.01
 
