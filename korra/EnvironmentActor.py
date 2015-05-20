@@ -4,7 +4,7 @@ import time
 
 class EnvironmentActor(pykka.ThreadingActor):
 
-    def __init__(self, init_pos, init_heading, time_resolution):
+    def __init__(self):
         super(EnvironmentActor, self).__init__()
 
         # robot current target

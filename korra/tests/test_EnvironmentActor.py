@@ -8,7 +8,7 @@ from molly.Vec2D import Vec2D
 class EnvironmentActorTest(unittest.TestCase):
 
     def setUp(self):
-        self.env = EnvironmentActor.start(Vec2D(1, 1), Vec2D(1, 0), 0.1)
+        self.env = EnvironmentActor.start()
 
     def tearDown(self):
         pykka.ActorRegistry.stop_all()
