@@ -7,17 +7,14 @@ from pickit.Datatypes import RobotSpacePoint
 
 
 class DummyEnv(pykka.ThreadingActor):
-
     def on_receive(self, msg):
         raise RuntimeError("Unexpected message")
 
     def get_target(self, name):
-        return (RobotSpacePoint(0.2, 0.1, 0, 0),
-                RobotSpacePoint(0, 0, 0, 0))
+        return (RobotSpacePoint(0.2, 0.1, 0, 0), RobotSpacePoint(0, 0, 0, 0))
 
 
 class DummyState(pykka.ThreadingActor):
-
     def __init__(self):
         super(DummyState, self).__init__()
         self.time = None
@@ -61,11 +58,11 @@ class DummyState(pykka.ThreadingActor):
 
 
 class ArmActorTest(unittest.TestCase):
-
     def setUp(self):
         self.dummy_env = DummyEnv.start()
         self.dummy_state = DummyState.start()
-        self.arm = ArmActor.start(self.dummy_state, self.dummy_env, 0.5, 'right')
+        self.arm = ArmActor.start(self.dummy_state, self.dummy_env, 0.5,
+                                  'right')
 
     def tearDown(self):
         pykka.ActorRegistry.stop_all()
@@ -84,8 +81,10 @@ class ArmActorTest(unittest.TestCase):
         time.sleep(0.2)  # wait for trajectory computation to finish
 
         self.assertIsNotNone(self.dummy_state.proxy().get_time().get())
-        self.assertIsNotNone(self.dummy_state.proxy().get_time_resolution().get())
+        self.assertIsNotNone(
+            self.dummy_state.proxy().get_time_resolution().get())
         self.assertIsNotNone(self.dummy_state.proxy().get_traj_z().get())
-        self.assertIsNotNone(self.dummy_state.proxy().get_traj_shoulder().get())
+        self.assertIsNotNone(
+            self.dummy_state.proxy().get_traj_shoulder().get())
         self.assertIsNotNone(self.dummy_state.proxy().get_traj_elbow().get())
         self.assertIsNotNone(self.dummy_state.proxy().get_traj_wrist().get())

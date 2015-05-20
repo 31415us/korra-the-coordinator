@@ -1,4 +1,3 @@
-
 import pykka
 import time
 import unittest
@@ -7,8 +6,8 @@ from korra.MollyActor import MollyActor
 
 from molly.Vec2D import Vec2D
 
-class DummyEnv(pykka.ThreadingActor):
 
+class DummyEnv(pykka.ThreadingActor):
     def on_receive(self, msg):
         raise Error()
 
@@ -21,8 +20,8 @@ class DummyEnv(pykka.ThreadingActor):
     def get_friend(self):
         return None
 
-class DummyState(pykka.ThreadingActor):
 
+class DummyState(pykka.ThreadingActor):
     def __init__(self):
         super(DummyState, self).__init__()
         self.time = None
@@ -44,24 +43,25 @@ class DummyState(pykka.ThreadingActor):
     def get_traj(self):
         return self.traj
 
-class MollyActorTest(unittest.TestCase):
 
+class MollyActorTest(unittest.TestCase):
     def setUp(self):
         self.dummy_env = DummyEnv.start()
         self.dummy_state = DummyState.start()
-        self.molly = MollyActor.start(self.dummy_state, self.dummy_env, 1.0, 1.0)
+        self.molly = MollyActor.start(self.dummy_state, self.dummy_env, 1.0,
+                                      1.0)
 
     def tearDown(self):
         pykka.ActorRegistry.stop_all()
 
     def test_sendtraj(self):
-        msg = {'cmd' : 'send_traj'}
+        msg = {'cmd': 'send_traj'}
 
         self.assertTrue(self.dummy_state.proxy().get_time().get() is None)
         self.assertTrue(self.dummy_state.proxy().get_traj().get() is None)
 
         self.molly.tell(msg)
-        time.sleep(0.2) # wait for trajectory computation to finish
+        time.sleep(0.2)  # wait for trajectory computation to finish
 
         self.assertTrue(self.dummy_state.proxy().get_time().get() is not None)
         self.assertTrue(self.dummy_state.proxy().get_traj().get() is not None)

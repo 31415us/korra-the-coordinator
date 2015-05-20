@@ -1,6 +1,6 @@
-
 import pykka
 import time
+
 
 class TimerActor(pykka.ThreadingActor):
     "actor that periodically sends a message to target \
@@ -28,5 +28,5 @@ class TimerActor(pykka.ThreadingActor):
         if not self.running:
             return
         time.sleep(self.sleep_time)
-        self.target.tell({'cmd' : self.event})
-        self.actor_ref.tell({'cmd' : 'trigger'})
+        self.target.tell({'cmd': self.event})
+        self.actor_ref.tell({'cmd': 'trigger'})

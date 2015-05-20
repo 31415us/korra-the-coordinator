@@ -1,33 +1,37 @@
-
 from pickit.Datatypes import *
 from pickit.ArmManager import ArmManager
 from pickit.DebraArm import DebraArm
+
 
 class ArmWrapper(object):
     "Wrapper for arms"
 
     def __init__(self, q0, flip):
-        if flip=='right':
-            flip_x  = FLIP_RIGHT_HAND
+        if flip == 'right':
+            flip_x = FLIP_RIGHT_HAND
             origin = Vector3D(0.15, 0.0, 0.0)
-            ws_side = Workspace(0.1,2.0, -1.0,1.0, 0.0,0.2, 1)
-        elif flip=='left':
-            flip_x  = FLIP_LEFT_HAND
+            ws_side = Workspace(0.1, 2.0, -1.0, 1.0, 0.0, 0.2, 1)
+        elif flip == 'left':
+            flip_x = FLIP_LEFT_HAND
             origin = Vector3D(-0.15, 0.0, 0.0)
-            ws_side = Workspace(-2.0,-0.1, -1.0,1.0, 0.0,0.2, 1)
+            ws_side = Workspace(-2.0, -0.1, -1.0, 1.0, 0.0, 0.2, 1)
 
-        arm = DebraArm(l1 = 0.2,
-                       l2 = 0.1,
-                       theta1_constraints = JointMinMaxConstraint(-pi/2,pi/2, -2,2, -1,1),
-                       theta2_constraints = JointMinMaxConstraint(-pi/2,pi/2, -2,2, -1,1),
-                       theta3_constraints = JointMinMaxConstraint(-pi/2,pi/2, -2,2, -1,1),
-                       z_constraints = JointMinMaxConstraint(0,0.2, -1,1, -1,1),
-                       q0 = q0,
-                       origin = origin,
-                       flip_x = flip_x)
+        arm = DebraArm(
+            l1=0.2,
+            l2=0.1,
+            theta1_constraints=JointMinMaxConstraint(-pi / 2, pi / 2, -2, 2, -
+                                                     1, 1),
+            theta2_constraints=JointMinMaxConstraint(-pi / 2, pi / 2, -2, 2, -
+                                                     1, 1),
+            theta3_constraints=JointMinMaxConstraint(-pi / 2, pi / 2, -2, 2, -
+                                                     1, 1),
+            z_constraints=JointMinMaxConstraint(0, 0.2, -1, 1, -1, 1),
+            q0=q0,
+            origin=origin,
+            flip_x=flip_x)
 
-        ws_front = Workspace(-1.0,1.0, 0.1,2.0, 0.0,0.2, 1)
-        ws_back = Workspace(-1.0,1.0, -2.0,-0.1, 0.0,0.2, -1)
+        ws_front = Workspace(-1.0, 1.0, 0.1, 2.0, 0.0, 0.2, 1)
+        ws_back = Workspace(-1.0, 1.0, -2.0, -0.1, 0.0, 0.2, -1)
         delta_t = 0.01
 
         self.arm = ArmManager(arm, ws_front, ws_side, ws_back, delta_t)
@@ -43,8 +47,10 @@ class ArmWrapper(object):
         target_pos = target[0]
         target_vel = target[1]
 
-        th1, th2, z, th3 = self.arm.goto(start_pos, start_vel, target_pos, target_vel)
+        th1, th2, z, th3 = self.arm.goto(start_pos, start_vel, target_pos,
+                                         target_vel)
         return arm_to_joint_traj(th1, th2, z, th3, self.arm.dt)
+
 
 def joint_states_to_arm(z, shoulder, elbow, wrist):
     (z_pos, z_vel, z_acc, z_trq) = z
@@ -58,6 +64,7 @@ def joint_states_to_arm(z, shoulder, elbow, wrist):
     print(pos, vel)
 
     return (pos, vel)
+
 
 def arm_to_joint_traj(traj_th1, traj_th2, traj_z, traj_th3, delta_t):
     points_z = []

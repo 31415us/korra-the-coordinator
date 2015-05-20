@@ -1,9 +1,8 @@
-
 import pykka
 import time
 
-class EnvironmentActor(pykka.ThreadingActor):
 
+class EnvironmentActor(pykka.ThreadingActor):
     def __init__(self):
         super(EnvironmentActor, self).__init__()
 
@@ -45,4 +44,3 @@ class EnvironmentActor(pykka.ThreadingActor):
 
     def get_target(self, planner_name):
         return self.planner_targets.get(planner_name)
-

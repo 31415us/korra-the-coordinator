@@ -1,4 +1,3 @@
-
 import pykka
 import time
 import logging
@@ -8,9 +7,10 @@ from molly.Circle import Circle
 
 from korra.Utils import MollyWrapper
 
-class MollyActor(pykka.ThreadingActor):
 
-    def __init__(self, state_publisher, environment, estimated_delay, obstacle_radius):
+class MollyActor(pykka.ThreadingActor):
+    def __init__(self, state_publisher, environment, estimated_delay,
+                 obstacle_radius):
         super(MollyActor, self).__init__()
         self.estimated_delay = estimated_delay
         self.state_publisher = state_publisher
@@ -26,23 +26,23 @@ class MollyActor(pykka.ThreadingActor):
             elif cmd == 'init':
                 init_state = msg.get('robot_state')
                 nmsg = {
-                        'cmd' : 'molly',
-                        'dt' : self.molly_wrapper.settings.time_resolution,
-                        'time' : time.time(),
-                        'traj' : [init_state]
-                        }
+                    'cmd': 'molly',
+                    'dt': self.molly_wrapper.settings.time_resolution,
+                    'time': time.time(),
+                    'traj': [init_state]
+                }
                 self.state_publisher.tell(nmsg)
         except Exception as e:
             print(cmd)
             logging.exception("molly crashed")
-
 
     def send_new_traj(self):
         now = time.time()
         state_proxy = self.state_publisher.proxy()
         env_proxy = self.environment.proxy()
 
-        robot_state = state_proxy.get_state('molly', now + self.estimated_delay).get()
+        robot_state = state_proxy.get_state('molly',
+                                            now + self.estimated_delay).get()
         target = env_proxy.get_target('molly').get()
 
         enemy_pos = env_proxy.get_enemies().get()
@@ -52,15 +52,14 @@ class MollyActor(pykka.ThreadingActor):
         if not friend_pos is None:
             obstacles.append(Cricle(friend_pos, self.obstacle_radius))
 
-        traj = self.molly_wrapper.get_trajectory(robot_state, target, obstacles)
+        traj = self.molly_wrapper.get_trajectory(robot_state, target,
+                                                 obstacles)
 
         msg = {
-                'cmd' : 'molly',
-                'time' : now + self.estimated_delay,
-                'traj' : traj,
-                'dt' : self.molly_wrapper.settings.time_resolution
-               }
+            'cmd': 'molly',
+            'time': now + self.estimated_delay,
+            'traj': traj,
+            'dt': self.molly_wrapper.settings.time_resolution
+        }
 
         self.state_publisher.tell(msg)
-
-

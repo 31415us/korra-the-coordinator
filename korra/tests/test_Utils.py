@@ -1,4 +1,3 @@
-
 import unittest
 
 from math import pi
@@ -7,8 +6,8 @@ from molly.Vec2D import Vec2D
 
 import korra.Utils as utils
 
-class HelperFunctionsTest(unittest.TestCase):
 
+class HelperFunctionsTest(unittest.TestCase):
     def test_robot_to_molly(self):
         robot_state = (0, 0, 1, pi / 2, 0)
 
@@ -52,7 +51,6 @@ class HelperFunctionsTest(unittest.TestCase):
 
 
 class MollyWrapperTest(unittest.TestCase):
-
     def setUp(self):
         self.wrapper = utils.MollyWrapper()
 
@@ -102,6 +100,3 @@ class MollyWrapperTest(unittest.TestCase):
         for (_, _, _, theta, _) in sub_traj:
             self.assertTrue(prev_theta <= theta)
             prev_theta = theta
-
-        
-

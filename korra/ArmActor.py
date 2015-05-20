@@ -1,4 +1,3 @@
-
 import pykka
 import time
 import logging
@@ -7,6 +6,7 @@ from pickit.Datatypes import *
 from pickit import ArmManager
 
 from korra.ArmUtils import ArmWrapper, joint_states_to_arm
+
 
 class ArmActor(pykka.ThreadingActor):
     def __init__(self, state_publisher, environment, estimated_delay, flip):
@@ -33,14 +33,14 @@ class ArmActor(pykka.ThreadingActor):
                 init_elbow = msg.get(self.flip + '_elbow_state')
                 init_wrist = msg.get(self.flip + '_wrist_state')
                 nmsg = {
-                        'cmd' : self.flip + '_arm_traj',
-                        'time' : now,
-                        'dt': self.arm.arm.dt,
-                        'z' : [(init_z[0], init_z[1], 0, 0)],
-                        'shoulder' : [(init_shoulder[0], init_shoulder[1], 0, 0)],
-                        'elbow' : [(init_elbow[0], init_elbow[1], 0, 0)],
-                        'wrist' : [(init_wrist[0], init_wrist[1], 0, 0)]
-                        }
+                    'cmd': self.flip + '_arm_traj',
+                    'time': now,
+                    'dt': self.arm.arm.dt,
+                    'z': [(init_z[0], init_z[1], 0, 0)],
+                    'shoulder': [(init_shoulder[0], init_shoulder[1], 0, 0)],
+                    'elbow': [(init_elbow[0], init_elbow[1], 0, 0)],
+                    'wrist': [(init_wrist[0], init_wrist[1], 0, 0)]
+                }
                 self.state_publisher.tell(nmsg)
         except Exception as e:
             print(cmd)
@@ -48,33 +48,37 @@ class ArmActor(pykka.ThreadingActor):
 
     def send_new_traj(self):
         now = time.time()
-        state = self.get_arm_state(now + self.estimated_delay) # state is pos & vel JointSpacePoint
+        state = self.get_arm_state(now + self.estimated_delay
+                                   )  # state is pos & vel JointSpacePoint
 
         env_proxy = self.environment.proxy()
-        target = env_proxy.get_target(self.flip+'_arm').get() # target is pos & vel RobotSpacePoint
+        target = env_proxy.get_target(self.flip + '_arm').get(
+        )  # target is pos & vel RobotSpacePoint
 
         print(target)
 
         z, shoulder, elbow, wrist = self.arm.goto(state, target)
 
         msg = {
-                'cmd' : self.flip + '_arm_traj',
-                'time' : now + self.estimated_delay,
-                'dt': self.arm.arm.dt,
-                'z' : z,
-                'shoulder' : shoulder,
-                'elbow' : elbow,
-                'wrist' : wrist
-               }
+            'cmd': self.flip + '_arm_traj',
+            'time': now + self.estimated_delay,
+            'dt': self.arm.arm.dt,
+            'z': z,
+            'shoulder': shoulder,
+            'elbow': elbow,
+            'wrist': wrist
+        }
 
         self.state_publisher.tell(msg)
 
     def get_arm_state(self, time):
         state_proxy = self.state_publisher.proxy()
 
-        z_state = state_proxy.get_state(self.flip+'-z', time).get()
-        shoulder_state = state_proxy.get_state(self.flip+'-shoulder', time).get()
-        elbow_state = state_proxy.get_state(self.flip+'-elbow', time).get()
-        wrist_state = state_proxy.get_state(self.flip+'-wrist', time).get()
+        z_state = state_proxy.get_state(self.flip + '-z', time).get()
+        shoulder_state = state_proxy.get_state(self.flip + '-shoulder',
+                                               time).get()
+        elbow_state = state_proxy.get_state(self.flip + '-elbow', time).get()
+        wrist_state = state_proxy.get_state(self.flip + '-wrist', time).get()
 
-        return joint_states_to_arm(z_state, shoulder_state, elbow_state, wrist_state)
+        return joint_states_to_arm(z_state, shoulder_state, elbow_state,
+                                   wrist_state)
