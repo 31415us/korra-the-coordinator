@@ -45,11 +45,16 @@ class MollyActor(pykka.ThreadingActor):
                                             now + self.estimated_delay).get()
         target = env_proxy.get_target('molly').get()
 
+        logging.info("Got asked to move from {} to {}".format(
+            (robot_state.x, robot_state.y), target))
+
         enemy_pos = env_proxy.get_enemies().get()
         friend_pos = env_proxy.get_friend().get()
 
         obstacles = [Circle(e, self.obstacle_radius) for e in enemy_pos]
+
         if friend_pos is not None:
+            logging.info("Adding friend obstacle at {}".format(friend_pos))
             obstacles.append(Circle(friend_pos, self.obstacle_radius))
 
         traj = self.molly_wrapper.get_trajectory(robot_state, target,

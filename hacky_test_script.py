@@ -84,6 +84,7 @@ class Tester(object):
         print_alive('molly', self.molly)
         print_alive('right_arm', self.right_arm)
         print_alive('left_arm', self.left_arm)
+        print_alive('pub timer', self.pub_timer)
         print_alive('korra', self.korra)
 
     def shutdown(self):
@@ -91,10 +92,11 @@ class Tester(object):
 
 
 if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.INFO)
     t = Tester()
+    t.env.tell({'cmd': 'update_friend', 'friend': Vec2D(2., 1.)})
     t.is_alive()
     t.init_explicit((1, 1, 0, 0, 0))
     t.is_alive()
     t.set_target(2.0, 1.0)
-    t.set_arm_target('right', 0.2, 0.1, 0, 0)
+    # t.set_arm_target('right', 0.2, 0.1, 0, 0)
