@@ -35,16 +35,11 @@ class ArmWrapper(object):
         Generic wrapper to move the arm
         """
         start_pos = self.arm.arm.forward_kinematics(start[0])
-        print(start_pos)
         self.arm.arm.compute_jacobian()
         start_vel = self.arm.arm.get_tool_vel(start[1])
-        print(start_vel)
 
         target_pos = target[0]
         target_vel = target[1]
-
-        print(target_pos)
-        print(target_vel)
 
         th1, th2, z, th3 = self.arm.goto(start_pos, start_vel, target_pos, target_vel)
         return arm_to_joint_traj(th1, th2, z, th3, self.arm.dt)

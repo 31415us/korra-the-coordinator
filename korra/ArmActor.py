@@ -25,18 +25,12 @@ class ArmActor(pykka.ThreadingActor):
 
     def send_new_traj(self):
         now = time.time()
-        print('a', self.state_publisher.is_alive(), self.environment.is_alive())
         state = self.get_arm_state(now) # state is pos & vel JointSpacePoint
-        print('b', self.state_publisher.is_alive(), self.environment.is_alive())
 
         env_proxy = self.environment.proxy()
         target = env_proxy.get_target(self.flip+'-arm').get() # target is pos & vel RobotSpacePoint
 
-        print('d', self.state_publisher.is_alive(), self.environment.is_alive())
-
         z, shoulder, elbow, wrist = self.arm.goto(state, target)
-
-        print('e', self.state_publisher.is_alive(), self.environment.is_alive())
 
         msg = {
                 'cmd' : self.flip + '_arm_traj',
@@ -46,8 +40,6 @@ class ArmActor(pykka.ThreadingActor):
                 'elbow' : elbow,
                 'wrist' : wrist
                }
-
-        print('cmd', msg.get('cmd'))
 
         self.state_publisher.tell(msg)
 

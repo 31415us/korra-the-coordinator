@@ -3,6 +3,7 @@ import time
 import unittest
 
 from korra.ArmActor import ArmActor
+from pickit.Datatypes import RobotSpacePoint
 
 class DummyEnv(pykka.ThreadingActor):
 
@@ -10,7 +11,8 @@ class DummyEnv(pykka.ThreadingActor):
         raise Error()
 
     def get_target(self, name):
-        return (0, 0)
+        return (RobotSpacePoint(0.2, 0.1, 0, 0),
+                RobotSpacePoint(0, 0, 0, 0))
 
 class DummyState(pykka.ThreadingActor):
 
@@ -72,7 +74,6 @@ class ArmActorTest(unittest.TestCase):
         self.arm.tell(msg)
         time.sleep(0.2) # wait for trajectory computation to finish
 
-        print('c', self.dummy_state.is_alive(), self.dummy_env.is_alive())
         self.assertTrue(self.dummy_state.proxy().get_time().get() is not None)
         self.assertTrue(self.dummy_state.proxy().get_traj_z().get() is not None)
         self.assertTrue(self.dummy_state.proxy().get_traj_shoulder().get() is not None)
