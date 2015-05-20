@@ -6,13 +6,13 @@ from korra.TimerActor import TimerActor
 
 class KorraActor(pykka.ThreadingActor):
 
-    def __init__(self, state_pub, env, molly, robot_init_state):
+    def __init__(self, state_pub, env, molly, right_arm, left_arm):
         super(KorraActor, self).__init__()
         self.state_pub = state_pub
         self.env = env
         self.molly = molly
-        #self.molly.tell({'cmd' : 'init', 'robot_state' : robot_init_state})
-        self.molly_future = None
+        self.right_arm = right_arm
+        self.left_arm = left_arm
 
     def on_receive(self, msg):
         cmd = msg.get('cmd')
@@ -31,6 +31,24 @@ class KorraActor(pykka.ThreadingActor):
                         }
                 self.env.tell(nmsg)
                 self.molly.tell({'cmd' : 'send_traj'})
+            elif cmd == 'right_arm_target':
+                target = msg.get('target')
+                nmsg = {
+                        'cmd' : 'update_target',
+                        'target' : target,
+                        'planner' : 'right_arm'
+                        }
+                self.env.tell(nmsg)
+                self.right_arm.tell({'cmd' : 'send_right_arm_traj'})
+            elif cmd == 'left_arm_target':
+                target = msg.get('target')
+                nmsg = {
+                        'cmd' : 'update_target',
+                        'target' : target,
+                        'planner' : 'left_arm'
+                        }
+                self.env.tell(nmsg)
+                self.left_arm.tell({'cmd' : 'send_left_arm_traj'})
             elif cmd == 'ramp_down':
                 nmsg = {
                         'cmd' : 'update_target',
@@ -39,6 +57,22 @@ class KorraActor(pykka.ThreadingActor):
                         }
                 self.env.tell(nmsg)
                 self.molly.tell({'cmd' : 'send_traj'})
+
+                nmsg = {
+                        'cmd' : 'update_target',
+                        'target' : None,
+                        'planner' : 'right_arm'
+                        }
+                self.env.tell(nmsg)
+                self.right_arm.tell({'cmd' : 'send_right_arm_traj'})
+
+                nmsg = {
+                        'cmd' : 'update_target',
+                        'target' : None,
+                        'planner' : 'left_arm'
+                        }
+                self.env.tell(nmsg)
+                self.left_arm.tell({'cmd' : 'send_left_arm_traj'})
         except Exception as e:
             print('cmd', cmd)
             logging.exception('korra crash')
