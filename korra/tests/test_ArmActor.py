@@ -19,6 +19,7 @@ class DummyState(pykka.ThreadingActor):
     def __init__(self):
         super(DummyState, self).__init__()
         self.time = None
+        self.dt = None
         self.traj_z = None
         self.traj_shoulder = None
         self.traj_elbow = None
@@ -27,6 +28,7 @@ class DummyState(pykka.ThreadingActor):
     def on_receive(self, msg):
         if msg.get('cmd') == 'right_arm_traj':
             self.time = msg.get('time')
+            self.dt = msg.get('dt')
             self.traj_z = msg.get('z')
             self.traj_shoulder = msg.get('shoulder')
             self.traj_elbow = msg.get('elbow')
@@ -39,6 +41,9 @@ class DummyState(pykka.ThreadingActor):
 
     def get_time(self):
         return self.time
+
+    def get_time_resolution(self):
+        return self.dt
 
     def get_traj_z(self):
         return self.traj_z
@@ -66,6 +71,7 @@ class ArmActorTest(unittest.TestCase):
         msg = {'cmd' : 'send_right_arm_traj'}
 
         self.assertTrue(self.dummy_state.proxy().get_time().get() is None)
+        self.assertTrue(self.dummy_state.proxy().get_time_resolution().get() is None)
         self.assertTrue(self.dummy_state.proxy().get_traj_z().get() is None)
         self.assertTrue(self.dummy_state.proxy().get_traj_shoulder().get() is None)
         self.assertTrue(self.dummy_state.proxy().get_traj_elbow().get() is None)
@@ -75,6 +81,7 @@ class ArmActorTest(unittest.TestCase):
         time.sleep(0.2) # wait for trajectory computation to finish
 
         self.assertTrue(self.dummy_state.proxy().get_time().get() is not None)
+        self.assertTrue(self.dummy_state.proxy().get_time_resolution().get() is not None)
         self.assertTrue(self.dummy_state.proxy().get_traj_z().get() is not None)
         self.assertTrue(self.dummy_state.proxy().get_traj_shoulder().get() is not None)
         self.assertTrue(self.dummy_state.proxy().get_traj_elbow().get() is not None)

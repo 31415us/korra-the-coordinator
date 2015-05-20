@@ -1,3 +1,4 @@
+
 import pykka
 import time
 
@@ -35,6 +36,7 @@ class ArmActor(pykka.ThreadingActor):
         msg = {
                 'cmd' : self.flip + '_arm_traj',
                 'time' : now + self.estimated_delay,
+                'dt': self.arm.arm.dt,
                 'z' : z,
                 'shoulder' : shoulder,
                 'elbow' : elbow,
