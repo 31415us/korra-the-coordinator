@@ -21,7 +21,7 @@ class ArmActor(pykka.ThreadingActor):
         self.arm = ArmWrapper(q0, flip)
 
     def on_receive(self, msg):
-        if msg.get('cmd') == 'send_right_arm_traj':
+        if msg.get('cmd') == 'send_' + self.flip + '_arm_traj':
             self.send_new_traj()
 
     def send_new_traj(self):
