@@ -4,10 +4,10 @@ import korra.ArmUtils as utils
 
 class HelperFunctionsTest(unittest.TestCase):
     def test_joint_states_to_arm(self):
-        z = (1, 2)
-        shoulder = (3, 4)
-        elbow = (5, 6)
-        wrist = (7, 8)
+        z = (1.1, 1.2, 0, 0)
+        shoulder = (1.3, 1.4, 0, 0)
+        elbow = (1.5, 1.6, 0, 0)
+        wrist = (1.7, 1.8, 0, 0)
 
         (pos, vel) = utils.joint_states_to_arm(z, shoulder, elbow, wrist)
 
