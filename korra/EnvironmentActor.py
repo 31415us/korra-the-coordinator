@@ -1,5 +1,5 @@
 import pykka
-import time
+import logging
 
 
 class EnvironmentActor(pykka.ThreadingActor):
@@ -18,6 +18,8 @@ class EnvironmentActor(pykka.ThreadingActor):
 
     def on_receive(self, msg):
         command = msg.get('cmd')
+        logging.debug('EnvironmentActor received command {}'.format(command))
+
         if command == 'update_friend':
             self.friend = msg.get('friend')
         elif command == 'update_enemy':

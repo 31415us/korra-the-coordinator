@@ -61,8 +61,6 @@ def joint_states_to_arm(z, shoulder, elbow, wrist):
     pos = JointSpacePoint(th1_pos, th2_pos, z_pos, th3_pos)
     vel = JointSpacePoint(th1_vel, th2_vel, z_vel, th3_vel)
 
-    print(pos, vel)
-
     return (pos, vel)
 
 

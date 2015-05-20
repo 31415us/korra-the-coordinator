@@ -17,12 +17,16 @@ class ArmActor(pykka.ThreadingActor):
         self.flip = flip
 
         # Get initial state of arm to initialise Arm
-        now = time.time()
         q0 = JointSpacePoint(0.0, 0.0, 0.0, 0.0)
         self.arm = ArmWrapper(q0, flip)
 
+    def __str__(self):
+        return "ArmActor (flip={})".format(self.flip)
+
     def on_receive(self, msg):
         cmd = msg.get('cmd')
+        logging.debug('{} received command {}'.format(str(self), cmd))
+
         try:
             if cmd == 'send_' + self.flip + '_arm_traj':
                 self.send_new_traj()
@@ -42,9 +46,8 @@ class ArmActor(pykka.ThreadingActor):
                     'wrist': [(init_wrist[0], init_wrist[1], 0, 0)]
                 }
                 self.state_publisher.tell(nmsg)
-        except Exception as e:
-            print(cmd)
-            logging.exception(self.flip + " arm crashed")
+        except Exception:
+            logging.exception("{} crashed".format(str(self)))
 
     def send_new_traj(self):
         now = time.time()
@@ -52,10 +55,11 @@ class ArmActor(pykka.ThreadingActor):
                                    )  # state is pos & vel JointSpacePoint
 
         env_proxy = self.environment.proxy()
-        target = env_proxy.get_target(self.flip + '_arm').get(
-        )  # target is pos & vel RobotSpacePoint
 
-        print(target)
+        # target is pos & vel RobotSpacePoint
+        target = env_proxy.get_target(self.flip + '_arm').get()
+
+        logging.info("{} got new target {}".format(str(self), target))
 
         z, shoulder, elbow, wrist = self.arm.goto(state, target)
 

@@ -11,6 +11,8 @@ from korra.TimerActor import TimerActor
 from molly.Vec2D import Vec2D
 from pickit.Datatypes import RobotSpacePoint
 
+import logging
+
 
 class Tester(object):
     def __init__(self):
@@ -71,21 +73,28 @@ class Tester(object):
         self.korra.tell({'cmd': 'ramp_down'})
 
     def is_alive(self):
-        print('env', self.env.is_alive())
-        print('state_pub', self.state_pub.is_alive())
-        print('molly', self.molly.is_alive())
-        print('right_arm', self.right_arm.is_alive())
-        print('left_arm', self.left_arm.is_alive())
-        print('korra', self.korra.is_alive())
+        def print_alive(name, actor):
+            if actor.is_alive():
+                logging.info("Actor {} is alive.".format(name))
+            else:
+                logging.warning("Actor {} is dead.".format(name))
+
+        print_alive('env', self.env)
+        print_alive('state_pub', self.state_pub)
+        print_alive('molly', self.molly)
+        print_alive('right_arm', self.right_arm)
+        print_alive('left_arm', self.left_arm)
+        print_alive('korra', self.korra)
 
     def shutdown(self):
         pykka.ActorRegistry.stop_all()
 
 
 if __name__ == "__main__":
+    logging.getLogger().setLevel(logging.DEBUG)
     t = Tester()
     t.is_alive()
     t.init_explicit((1, 1, 0, 0, 0))
     t.is_alive()
-    # t.set_target(2.0, 1.0)
+    t.set_target(2.0, 1.0)
     t.set_arm_target('right', 0.2, 0.1, 0, 0)

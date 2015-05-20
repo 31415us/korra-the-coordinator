@@ -15,6 +15,7 @@ class KorraActor(pykka.ThreadingActor):
 
     def on_receive(self, msg):
         cmd = msg.get('cmd')
+        logging.debug('KorraActor received command: {}'.format(cmd))
 
         try:
             if cmd == 'molly_timer':
@@ -72,6 +73,5 @@ class KorraActor(pykka.ThreadingActor):
                 }
                 self.env.tell(nmsg)
                 self.left_arm.tell({'cmd': 'send_left_arm_traj'})
-        except Exception as e:
-            print('cmd', cmd)
+        except Exception:
             logging.exception('korra crash')

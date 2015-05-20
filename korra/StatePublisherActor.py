@@ -18,7 +18,7 @@ class StatePublisherActor(pykka.ThreadingActor):
 
     def on_receive(self, msg):
         cmd = msg.get('cmd')
-        print(cmd)
+        logging.debug('StatePublisherActor received command: {}'.format(cmd))
         try:
             if cmd == 'molly':
                 tm = msg.get('time')
@@ -98,9 +98,8 @@ class StatePublisherActor(pykka.ThreadingActor):
 
             elif cmd == 'publish':
                 self.publisher.publish(time.time())
-        except Exception as e:
-            print('cmd', cmd)
-            logging.exception("StatePublisher crash")
+        except Exception:
+            logging.exception("StatePublisher crashed (cmd={})".format(str(cmd)))
 
     def get_state(self, name, tm):
         return self.publisher.get_state(name, tm)

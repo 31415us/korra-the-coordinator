@@ -20,6 +20,7 @@ class MollyActor(pykka.ThreadingActor):
 
     def on_receive(self, msg):
         cmd = msg.get('cmd')
+        logging.debug('MollyActor received command {}'.format(command))
         try:
             if cmd == 'send_traj':
                 self.send_new_traj()
@@ -32,8 +33,7 @@ class MollyActor(pykka.ThreadingActor):
                     'traj': [init_state]
                 }
                 self.state_publisher.tell(nmsg)
-        except Exception as e:
-            print(cmd)
+        except Exception:
             logging.exception("molly crashed")
 
     def send_new_traj(self):
@@ -49,8 +49,8 @@ class MollyActor(pykka.ThreadingActor):
         friend_pos = env_proxy.get_friend().get()
 
         obstacles = [Circle(e, self.obstacle_radius) for e in enemy_pos]
-        if not friend_pos is None:
-            obstacles.append(Cricle(friend_pos, self.obstacle_radius))
+        if friend_pos is not None:
+            obstacles.append(Circle(friend_pos, self.obstacle_radius))
 
         traj = self.molly_wrapper.get_trajectory(robot_state, target,
                                                  obstacles)
