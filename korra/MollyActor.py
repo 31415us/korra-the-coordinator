@@ -18,8 +18,18 @@ class MollyActor(pykka.ThreadingActor):
         self.molly_wrapper = MollyWrapper()
 
     def on_receive(self, msg):
-        if msg.get('cmd') == 'send_traj':
+        cmd = msg.get('cmd')
+        if cmd == 'send_traj':
             self.send_new_traj()
+        elif cmd == 'init':
+            init_state = msg.get('robot_state')
+            nmsg = {
+                    'cmd' : 'molly',
+                    'dt' : self.molly_wrapper.settings.time_resolution,
+                    'time' : time.time(),
+                    'traj' : [init_state]
+                    }
+            self.state_publisher.tell(nmsg)
 
     def send_new_traj(self):
         now = time.time()
