@@ -29,7 +29,7 @@ class DummyState(pykka.ThreadingActor):
         self.traj = None
 
     def on_receive(self, msg):
-        if msg.get('cmd') == 'base_traj':
+        if msg.get('cmd') == 'molly':
             self.time = msg.get('time')
             self.traj = msg.get('traj')
         else:
