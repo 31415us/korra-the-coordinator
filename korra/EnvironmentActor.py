@@ -17,18 +17,18 @@ class EnvironmentActor(pykka.ThreadingActor):
         self.friend = None
 
     def on_receive(self, msg):
-        command = msg.get('cmd')
-        logging.debug('EnvironmentActor received command {}'.format(command))
+        cmd = msg.get('cmd')
+        logging.debug('EnvironmentActor received command {}'.format(cmd))
 
-        if command == 'update_friend':
+        if cmd == 'update_friend':
             self.friend = msg.get('friend')
-        elif command == 'update_enemy':
+        elif cmd == 'update_enemy':
             (pos, e_id) = msg.get('enemy')
             if e_id == 1:
                 self.enemy1 = pos
             elif e_id == 2:
                 self.enemy2 = pos
-        elif command == 'update_target':
+        elif cmd == 'update_target':
             planner_name = msg.get('planner')
             target = msg.get('target')
             self.planner_targets[planner_name] = target

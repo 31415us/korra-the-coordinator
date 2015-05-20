@@ -20,7 +20,7 @@ class MollyActor(pykka.ThreadingActor):
 
     def on_receive(self, msg):
         cmd = msg.get('cmd')
-        logging.debug('MollyActor received command {}'.format(command))
+        logging.debug('MollyActor received command {}'.format(cmd))
         try:
             if cmd == 'send_traj':
                 self.send_new_traj()
