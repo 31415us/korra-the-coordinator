@@ -26,7 +26,7 @@ class ArmActor(pykka.ThreadingActor):
 
     def send_new_traj(self):
         now = time.time()
-        state = self.get_arm_state(now) # state is pos & vel JointSpacePoint
+        state = self.get_arm_state(now + self.estimated_delay) # state is pos & vel JointSpacePoint
 
         env_proxy = self.environment.proxy()
         target = env_proxy.get_target(self.flip+'-arm').get() # target is pos & vel RobotSpacePoint
