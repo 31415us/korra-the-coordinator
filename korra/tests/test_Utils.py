@@ -70,7 +70,7 @@ class MollyWrapperTest(unittest.TestCase):
 
     def test_target_eq_pos(self):
         robot_state = (0, 0, 0, 0, 0)
-        target = Vec2D()
+        target = (0, 0, 0)
         obstacles = []
 
         traj = self.wrapper.get_trajectory(robot_state, target, obstacles)
@@ -87,7 +87,7 @@ class MollyWrapperTest(unittest.TestCase):
 
     def test_speed_zero_rotate(self):
         robot_state = (0, 0, 0, 0, 0)
-        target = Vec2D(0, 1)
+        target = (0, 1, 0)
         obstacles = []
 
         traj = self.wrapper.get_trajectory(robot_state, target, obstacles)

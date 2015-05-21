@@ -25,26 +25,55 @@ class MollyWrapper(object):
 
         (pos, heading, speed) = robot_state_to_molly(robot_state)
 
-        if target is None or target.is_equal(pos):
+        if target is None:
             molly_traj = ramp_down(pos, heading, speed, self.settings)
 
             return molly_traj_to_robot_state_traj(
                 robot_state, molly_traj, self.settings.time_resolution)
+
+        target_pos = Vec2D(target[0], target[1])
+        target_heading = target[2]
+
+        if pos.is_equal(target_pos):
+            traj = []
+            if abs(theta - target_heading) > 1e3:
+                # rotate robot when at target but different theta
+                traj = rotate_robot(robot_state,
+                                    target_heading,
+                                    self.joint,
+                                    self.settings.time_resolution)
+            else:
+                molly_traj = ramp_down(pos, heading, speed, self.settings)
+                traj = molly_traj_to_robot_state_traj(
+                        robot_state, molly_traj, self.settings.time_resolution)
+
+            return traj
+
+
         traj = []
         if speed < 1e-3:
             # when standing still it's probably more efficient to first
             # turn towards the target before starting to move
-            vec_to_target = (target - pos)
+            vec_to_target = (target_pos - pos)
             target_theta = Vec2D(1, 0).oriented_angle(vec_to_target)
             traj = traj + rotate_robot(robot_state, target_theta, self.joint,
                                        self.settings.time_resolution)
 
         molly_traj = get_path(self.settings, [],
                               # assume no dynamic polygonal obstacles
-                              obstacles, pos, heading, speed, target)
+                              obstacles, pos, heading, speed, target_pos)
 
         traj = traj + molly_traj_to_robot_state_traj(
             robot_state, molly_traj, self.settings.time_resolution)
+
+        last_robot_state = traj[-1]
+
+        if abs(last_robot_state[3] - target_heading) > 1e3:
+            (lpos, lhead, lvel) = robot_state_to_molly(last_robot_state)
+            traj = traj + rotate_robot(last_robot_state,
+                                       target_heading,
+                                       self.joint,
+                                       self.settings.time_resolution)
 
         return traj
 

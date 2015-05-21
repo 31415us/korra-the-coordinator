@@ -12,7 +12,7 @@ class DummyEnv(pykka.ThreadingActor):
         raise Error()
 
     def get_target(self, name):
-        return Vec2D(1, 0)
+        return (1, 0, 0)
 
     def get_enemies(self):
         return []

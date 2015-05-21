@@ -43,10 +43,11 @@ class MollyActor(pykka.ThreadingActor):
 
         robot_state = state_proxy.get_state('molly',
                                             now + self.estimated_delay).get()
+
         target = env_proxy.get_target('molly').get()
 
         logging.info("Got asked to move from {} to {}".format(
-            (robot_state.x, robot_state.y), target))
+            (robot_state[0], robot_state[1]), target))
 
         enemy_pos = env_proxy.get_enemies().get()
         friend_pos = env_proxy.get_friend().get()

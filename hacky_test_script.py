@@ -48,8 +48,8 @@ class Tester(object):
         self.molly_timer.tell({'cmd': 'start'})
         self.pub_timer.tell({'cmd': 'start'})
 
-    def set_target(self, x, y):
-        target = Vec2D(x, y)
+    def set_target(self, x, y, theta):
+        target = (x, y, theta)
 
         msg = {}
         msg['cmd'] = 'molly_target'
@@ -95,8 +95,7 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
     t = Tester()
     t.env.tell({'cmd': 'update_friend', 'friend': Vec2D(2., 1.)})
-    t.is_alive()
     t.init_explicit((1, 1, 0, 0, 0))
+    t.set_target(2.0, 1.0, 0.0)
     t.is_alive()
-    t.set_target(2.0, 1.0)
     # t.set_arm_target('right', 0.2, 0.1, 0, 0)
